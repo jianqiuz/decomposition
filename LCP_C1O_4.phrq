@@ -145,7 +145,7 @@ PRINT
   -reset false
 SELECTED_OUTPUT
   -RESET false
-  -FILE co4.txt
+  -FILE lcp_c1o_4.txt
 USER_PUNCH
   -start
   -heading Time(d) pH Ac Glucose Fulvic WEOC Fe(2) Fe(3) CO2(gmole) CH4(gmole) H2(gmole) CO2s(mole) Fe(OH)3a SOM1 SOM2 SOM3 SOM4 FeRb MeGAb MeGHb Ac- Fe+2 Fe+3 H2 fpH
