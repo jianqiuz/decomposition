@@ -14,4 +14,4 @@ Step 2: Database development
 The database developed in this paper (redox.dat) included similified CLM-CN carbon decomposition cascade, fermentation, methanogenesis, iron reduction, and WHAM pH buffering model.
 
 Step3: Run the python script to generate PHREEQC exacutable .phrq files
-
+File LCP_C1O_4.phrq is a sample PHREEQC input file and lcp_c1o_4.txt is the corresponding output file.
