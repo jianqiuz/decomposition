@@ -5,6 +5,7 @@ Citation: Zheng, J., Thornton, P. E., Painter, S. L., Gu, B., Wullschleger, S. D
 
 Step 1: PHREEQC installation (Mac system)
 Download is available on USGS website https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/
+
 In the .bash_profile under the home directory:  
 export PATH="/Users/Jianqiu/Applications/phreeqc/bin:$PATH"
 export PHREEQC_DATABASE=/Users/Jianqiu/Applications/phreeqc/database/phreeqc.dat
