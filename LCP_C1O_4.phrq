@@ -1,0 +1,165 @@
+
+DATABASE ../database/redox.dat
+
+TITLE simulate CO2 and CH4 production from microcosm tests
+
+CALCULATE_VALUES
+ fpH
+ -start
+ 10 pH = -la("H+")
+ 20 if pH < 7.0 then fpH = 1.02 / (1.0 + 1.0e6 * exp(-2.5 * pH))
+ 30 if pH > 7.0 then fpH = 1.02 / (1.0 + 1.0e6 * exp(-2.5 * (14.0 - pH)))
+ 40 if pH < 4.0 then fpH = 0.0
+ 50 if pH > 10.0 then fpH = 0.0
+ 60 SAVE fpH
+ -end
+
+SOLUTION 1
+  units       mmol/kgw
+  temperature 	 4.0
+  pH 	 5.02
+  water 	   0.013588
+  Acetate 	       6.37
+  Glucose 	      11.04
+  Ferrous 	       0.79
+
+  C(4)        1.0 redoxCO2(g) -3.4  # in equilibrium with CO2 in atmosphere, 400 pm
+  Ca          1.0
+  Na          1.0
+  Cl          1.0 charge
+  Hzero       1.0e-10
+  Nzero       1.0 redoxN2(g) 0.0
+  Ferric      1e-20 redoxFe(OH)3(a) 0.0
+  Methane     1.0e-10
+  Amm         1.0e-3
+  SAVE SOLUTION 1
+END
+
+
+GAS_PHASE 1 fixed volume gas phase
+  -fixed_volume
+  -volume 	   0.042528
+  temperature 	 4.0
+
+  redoxCH4(g) 0.0
+  redoxCO2(g) 0.0
+  redoxH2(g)  0.0
+  redoxN2(g)  1.0
+  redoxNH3(g) 0.0
+  SAVE GAS_PHASE 1
+END
+ 
+USE SOLUTION 1
+USE GAS_PHASE 1
+ 
+EQUILIBRIUM_PHASES 1
+  redoxFe(OH)3(a) 0.0 2.63879401E-04
+SURFACE 1
+Hfo_w redoxFe(OH)3(a) 0.2 1.068E4
+Hfo_s redoxFe(OH)3(a) 0.005 1.068E4
+  H_a   3.837E-04  3.417E+04      0.540
+  H_b   3.837E-04; H_c   3.837E-04; H_d  3.837E-04
+  H_e   1.919E-04; H_f   1.919E-04; H_g  1.919E-04; H_h  1.919E-04
+  H_ab  6.378E-05; H_ad  6.378E-05; H_af  6.378E-05; H_ah  6.378E-05
+  H_bc  6.378E-05; H_be  6.378E-05; H_bg  6.378E-05; H_cd  6.378E-05
+  H_cf  6.378E-05; H_ch  6.378E-05; H_de  6.378E-05; H_dg  6.378E-05
+  -equil 1
+KINETICS
+  -cvode
+  FeRAk
+    -formula Ferrous -150.1676 H -166.4385 HCO3 -37.5419 Ferric 150.1676 H2O 72.0838 Acetate 21.2709
+    -parms   9.339E-07 1.2E-5 0.062 1.0E-6
+
+  FeRHk
+    -formula Ferrous -114.7648 H -109.7648 H2O -13.0 Ferric 114.7648 HCO3 5.0 Hzero2 67.3824
+    -parms   1.494E-06 1.0E-6 0.062 1.0E-6
+
+  FeRd
+    -m0  1.800E-07
+
+    -formula CH2O 0.0
+    -parms  1.868E-06
+
+  FeRb
+    -formula CH2O 0.0
+    -m0  1.800E-07
+
+  MeGAk
+    -formula HCO3 -101.1836 MethaneH4 -101.1836 H 1.5 H2O 98.1836 Acetate 103.6836
+    -parms  1.121E-06 2.3e-5 1.0e-6
+
+  MeGAd
+    -m0  1.800E-07
+
+    -formula CH2O 0.0
+    -parms  1.868E-06
+
+  MeGAb
+    -formula CH2O 0.0
+    -m0  1.800E-07
+
+  MeGHk
+    -formula H2O -255.6428 MethaneH4 -80.8809 H 84.8809 Hzero2 333.5237 HCO3 85.8809
+    -parms  9.339E-07 4.7e-6 1.0e-6
+
+  MeGHd
+    -m0  0.000E+00
+
+    -formula CH2O 0.0
+    -parms  1.868E-06
+
+  MeGHb
+    -formula CH2O 0.0
+    -m0  1.800E-07
+
+  Fermentation
+    -formula Glucose 1.0 H2O 4.0 Acetate -2.0 HCO3 -2.0 H -4.0 Hzero2 -4.0
+    -parms  8.069E-10
+
+  SOM1
+    -m0  4.500E-03
+    -formula CH2O 0.0
+    -parms  1.355E-07 0.10
+
+  SOM2
+    -m0  1.800E-02
+    -formula CH2O 0.0
+    -parms  2.634E-08 0.15
+
+  SOM3
+    -m0  4.500E-03
+    -formula CH2O 0.0
+    -parms  2.617E-09 0.20
+
+  SOM4
+    -m0  1.710E-02
+    -formula CH2O 0.0
+    -parms  1.867E-10 0.45
+
+  Respiration
+    -formula CO2 -0.200 Glucose -0.133
+
+  -steps 8e6 in 8000 steps
+INCREMENTAL_REACTIONS true
+PRINT
+  -reset false
+SELECTED_OUTPUT
+  -RESET false
+  -FILE co4.txt
+USER_PUNCH
+  -start
+  -heading Time(d) pH Ac Glucose Fulvic WEOC Fe(2) Fe(3) CO2(gmole) CH4(gmole) H2(gmole) CO2s(mole) Fe(OH)3a SOM1 SOM2 SOM3 SOM4 FeRb MeGAb MeGHb Ac- Fe+2 Fe+3 H2 fpH
+  10 PUNCH SIM_TIME / 86400.0
+  20 PUNCH -la("H+")
+  30 PUNCH tot('Acetate')*1000.0 tot('Glucose')*1000.0, tot('Fulvic')*1000.0 (tot('Acetate')*2.0+tot('Glucose')*6.0+tot('Fulvic'))*1000.0
+  40 PUNCH tot('Ferrous')*1000.0 tot('Ferric')*1000.0
+  50 PUNCH GAS('redoxCO2(g)')*1000000 GAS('redoxCH4(g)')*1000000 GAS('redoxH2(g)')*1000000
+  60 PUNCH surf("C(4)", "Hfo")
+ 100 PUNCH equi('redoxFe(OH)3(a)')/  0.013588*1000.0
+ 110 PUNCH kin('SOM1') kin('SOM2') kin('SOM3') kin('SOM4')
+ 120 PUNCH kin('FeRb') kin('MeGAb') kin('MeGHb')
+ 130 PUNCH mol('Acetate-')*1000.0 mol('Ferrous+2')*1000.0 mol('Ferric+3')*1000.0 mol('Hzero2')*1000.0
+ 140 PUNCH CALC_VALUE('fpH')
+
+  -end
+END
